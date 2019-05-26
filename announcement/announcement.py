@@ -129,7 +129,7 @@ class AnnoucementPlugin(commands.Cog):
                 await ctx.send("Cancelled")
                 return
             else:
-                schan.send(embed=embed)
+                await schan.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_ready(self):
