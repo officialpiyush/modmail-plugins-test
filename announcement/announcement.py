@@ -1,5 +1,6 @@
 import discord
 import typing
+import re
 from discord.ext import commands
 
 from core import checks
@@ -39,8 +40,8 @@ class AnnoucementPlugin(commands.Cog):
         def check(msg: discord.Message):
             return ctx.author == msg.author and ctx.channel == msg.channel
 
-        def check_reaction(reaction: discord.Reaction, user: discord.Member):
-            return ctx.author == user and (str(reaction.emoji == "✅") or str(reaction.emoji) == "❌")
+        # def check_reaction(reaction: discord.Reaction, user: discord.Member):
+        #     return ctx.author == user and (str(reaction.emoji == "✅") or str(reaction.emoji) == "❌")
 
         def title_check(msg: discord.Message):
             return (
@@ -57,10 +58,10 @@ class AnnoucementPlugin(commands.Cog):
                     ctx.author == msg.author and ctx.channel == msg.channel and (len(msg.content) < 2048)
             )
 
-        def author_check(msg: discord.Message):
-            return (
-                    ctx.author == msg.author and ctx.channel == msg.channel and (len(msg.content) < 256)
-            )
+        # def author_check(msg: discord.Message):
+        #     return (
+        #             ctx.author == msg.author and ctx.channel == msg.channel and (len(msg.content) < 256)
+        #     )
 
         def cancel_check(msg: discord.Message):
             if msg.content == "cancel" or msg.content == f"{ctx.prefix}cancel":
@@ -103,7 +104,8 @@ class AnnoucementPlugin(commands.Cog):
                 await ctx.send("Cancelled")
                 return
             elif cancel_check(t_res) is False and t_res.content.lower() == "y":
-                await ctx.send(embed=await self.generate_embed("What should be the title of the embed?\n**Must not exceed 256 characters**"))
+                await ctx.send(embed=await self.generate_embed("What should be the title of the embed?"
+                                                               "\n**Must not exceed 256 characters**"))
                 tit = await self.bot.wait_for("message", check=title_check)
                 embed.title = tit.content
             await ctx.send(embed=await self.generate_embed("Will the embed have an description?`[y/n]`"))
@@ -112,18 +114,43 @@ class AnnoucementPlugin(commands.Cog):
                 await ctx.send("Cancelled")
                 return
             elif cancel_check(d_res) is False and d_res.content.lower() == "y":
-                await ctx.send(embed=await self.generate_embed("What should be the description of the embed?\n**Must not exceed 2048 characters**"))
+                await ctx.send(embed=await self.generate_embed("What should be the description of the embed?"
+                                                               "\n**Must not exceed 2048 characters**"))
                 des = await self.bot.wait_for("message", check=description_check)
                 embed.description = des.content
-            await ctx.send(embed= await self.generate_embed("Will the embed have a footer?`[y/n]`"))
+
+            await ctx.send(embed=await self.generate_embed("Will the embed have a footer?`[y/n]`"))
             f_res: discord.Message = await self.bot.wait_for("message", check=check)
             if cancel_check(f_res) is True:
                 await ctx.send("Cancelled")
                 return
             elif cancel_check(f_res) is False and f_res.content.lower() == "y":
-                await ctx.send(embed=await self.generate_embed("What should be the footer of the embed?\n**Must not exceed 2048 characters**"))
+                await ctx.send(embed=await self.generate_embed("What should be the footer of the embed?"
+                                                               "\n**Must not exceed 2048 characters**"))
                 foo = await self.bot.wait_for("message", check=footer_check)
                 embed.set_footer(text=foo.content)
+
+            await ctx.send(embed=await self.generate_embed("Do you want it to have a color?"))
+            c_res: discord.Message = await self.bot.wait_for("message", check=check)
+            if cancel_check(c_res) is True:
+                await ctx.send("Cancelled!")
+                return
+            elif cancel_check(c_res) is False and c_res.content.lower() == "y":
+                await ctx.send(embed=await self.generate_embed("What Colour should the embed have? "
+                                                               "Please provide a valid hex color"))
+                colo = await self.bot.wait_for("message", check=check)
+                if cancel_check(colo) is True:
+                    await ctx.send("Cancelled!")
+                    return
+                else:
+                    match = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', colo.content) # uwu thanks stackoverflow
+                    if match:
+                        embed.colour = colo.replace("#", "0x")  # Basic Computer Science
+                    else:
+                        await ctx.send("Failed! Not a valid hex color, get yours from "
+                                       "https://www.google.com/search?q=color+picker")
+                        return 
+
             await ctx.send(embed=await self.generate_embed("In which channel should I send the announcement?"))
             channel: discord.Message = await self.bot.wait_for("message", check=check)
             if cancel_check(channel) is True:
