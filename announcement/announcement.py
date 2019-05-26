@@ -145,11 +145,11 @@ class AnnoucementPlugin(commands.Cog):
                 else:
                     match = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', colo.content) # uwu thanks stackoverflow
                     if match:
-                        embed.colour = colo.replace("#", "0x")  # Basic Computer Science
+                        embed.colour = colo.content.replace("#", "0x")  # Basic Computer Science
                     else:
                         await ctx.send("Failed! Not a valid hex color, get yours from "
                                        "https://www.google.com/search?q=color+picker")
-                        return 
+                        return
 
             await ctx.send(embed=await self.generate_embed("In which channel should I send the announcement?"))
             channel: discord.Message = await self.bot.wait_for("message", check=check)
