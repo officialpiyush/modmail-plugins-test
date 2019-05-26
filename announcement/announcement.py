@@ -74,20 +74,21 @@ class AnnoucementPlugin(commands.Cog):
 
         await ctx.send("Starting an interactive process to make an announcement")
 
-        await ctx.send(embed=self.generate_embed("Do you want it to be an embed? `[y/n]`"))
+        await ctx.send(embed=await self.generate_embed("Do you want it to be an embed? `[y/n]`"))
 
         embed_res: discord.Message = await self.bot.wait_for("message", check=check)
         if cancel_check(embed_res) is True:
             await ctx.send("Cancelled!")
             return
         elif cancel_check(embed_res) is False and embed_res.content.lower() == "n":
-            await ctx.send("Okay, Lets do a no-embed announcement.\nWhat's The Announcement?")
+            await ctx.send(embed=await self.generate_embed("Okay, Lets do a no-embed announcement."
+                                                           "\nWhat's The Announcement?"))
             announcement = await self.bot.wait_for("message", check=check)
             if cancel_check(announcement) is True:
                 await ctx.send("Cancelled!")
                 return
             else:
-                await ctx.send("In which channel should I send the announcement?")
+                await ctx.send(embed=await self.generate_embed("In which channel should I send the announcement?"))
                 channel: discord.Message = await self.bot.wait_for("message", check=check)
                 if cancel_check(channel) is True:
                     await ctx.send("Cancelled!")
@@ -100,34 +101,34 @@ class AnnoucementPlugin(commands.Cog):
                         await channel.channel_mentions[0].send(f"{role_mention}\n{announcement.content}")
         elif cancel_check(embed_res) is False and embed_res.content.lower() == "y":
             embed = discord.Embed()
-            await ctx.send("Should the embed have an title? `[y/n]`")
+            await ctx.send(embed= await self.generate_embed("Should the embed have an title? `[y/n]`"))
             t_res = await self.bot.wait_for("message", check=check)
             if cancel_check(t_res) is True:
                 await ctx.send("Cancelled")
                 return
             elif cancel_check(t_res) is False and t_res.content.lower() == "y":
-                await ctx.send("What should be the title of the embed?\n**Must not exceed 256 characters**")
+                await ctx.send(embed=await self.generate_embed("What should be the title of the embed?\n**Must not exceed 256 characters**"))
                 tit = await self.bot.wait_for("message", check=title_check)
                 embed.title = tit.content
-            await ctx.send("Will the embed have an description?`[y/n]`")
+            await ctx.send(embed=await self.generate_embed("Will the embed have an description?`[y/n]`"))
             d_res: discord.Message = await self.bot.wait_for("message", check=check)
             if cancel_check(d_res) is True:
                 await ctx.send("Cancelled")
                 return
             elif cancel_check(d_res) is False and d_res.content.lower() == "y":
-                await ctx.send("What should be the description of the embed?\n**Must not exceed 2048 characters**")
+                await ctx.send(embed=await self.generate_embed("What should be the description of the embed?\n**Must not exceed 2048 characters**"))
                 des = await self.bot.wait_for("message", check=description_check)
                 embed.description = des.content
-            await ctx.send("Will the embed have a footer?`[y/n]`")
+            await ctx.send(embed= await self.generate_embed("Will the embed have a footer?`[y/n]`"))
             f_res: discord.Message = await self.bot.wait_for("message", check=check)
             if cancel_check(f_res) is True:
                 await ctx.send("Cancelled")
                 return
             elif cancel_check(f_res) is False and f_res.content.lower() == "y":
-                await ctx.send("What should be the footer of the embed?\n**Must not exceed 2048 characters**")
+                await ctx.send(embed=await self.generate_embed("What should be the footer of the embed?\n**Must not exceed 2048 characters**"))
                 foo = await self.bot.wait_for("message", check=footer_check)
                 embed.footer.text = foo.content
-            await ctx.send("In which channel should I send the announcement?")
+            await ctx.send(embed=await self.generate_embed("In which channel should I send the announcement?"))
             channel: discord.Message = await self.bot.wait_for("message", check=check)
             if cancel_check(channel) is True:
                 await ctx.send("Cancelled!")
