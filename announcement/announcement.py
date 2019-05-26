@@ -36,8 +36,6 @@ class AnnoucementPlugin(commands.Cog):
             guild: discord.Guild = ctx.guild
             grole: discord.Role = await guild.get_role(role.id)
             await grole.edit(mentionable=True)
-            del guild
-            del grole
 
         role_mention = f"<@&{role.id}>" if role else ""
 
