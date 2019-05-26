@@ -69,6 +69,11 @@ class AnnoucementPlugin(commands.Cog):
             else:
                 return False
 
+        if role:
+            guild: discord.Guild = ctx.guild
+            grole: discord.Role = guild.get_role(role.id)
+            await grole.edit(mentionable=False)
+
         await ctx.send("Starting an interactive process to make an announcement")
 
         await ctx.send(embed=await self.generate_embed("Do you want it to be an embed? `[y/n]`"))
