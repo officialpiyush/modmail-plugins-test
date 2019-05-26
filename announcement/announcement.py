@@ -145,7 +145,7 @@ class AnnoucementPlugin(commands.Cog):
                 else:
                     match = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', colo.content) # uwu thanks stackoverflow
                     if match:
-                        embed.colour = colo.content.replace("#", "0x")  # Basic Computer Science
+                        embed.colour = int(colo.content.replace("#", "0x"), 0)  # Basic Computer Science
                     else:
                         await ctx.send("Failed! Not a valid hex color, get yours from "
                                        "https://www.google.com/search?q=color+picker")
