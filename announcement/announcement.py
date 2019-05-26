@@ -14,14 +14,34 @@ class AnnoucementPlugin(commands.Cog):
     @commands.group()
     @commands.guild_only()
     async def announcement(self, ctx: commands.Context):
+        """Make Announcements Easily"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
     @announcement.command()
     @checks.has_permissions(PermissionLevel.ADMIN)
     async def start(self, ctx: commands.Context, role: typing.Optional[discord.Role]):
+        """
+        Start an interactive session to make announcement
+        Give the role in the command if you wanna mention any
+
+        **Example:**
+        __Announcement With Role Mention:__
+        [p]announcement start everyone
+
+        __Announcement Without Role Mention__
+        [p]announcement start
+        """
+        if role:
+            guild: discord.Guild = ctx.guild
+            grole: discord.Role = await guild.get_role(role.id)
+            await grole.edit(mentionable=True)
+            del guild
+            del grole
+
         role_mention = f"<@&{role.id}>" if role else ""
 
+        # TODO: Make use of reactions
         def check(msg: discord.Message):
             return ctx.author == msg.author and ctx.channel == msg.channel
 
@@ -56,10 +76,7 @@ class AnnoucementPlugin(commands.Cog):
 
         await ctx.send("Starting an interactive process to make an announcement")
 
-        await ctx.send("Do you want it to be an embed? `[y/n]`")
-        # embed_res: discord.Message = await self.bot.wait_for("message", check=check)
-        # embed_r: discord.Reaction = await self.bot.wait_for("reaction_add", check=check_reaction)
-        # if embed_r.emoji ==
+        await ctx.send(embed=self.generate_embed("Do you want it to be an embed? `[y/n]`"))
 
         embed_res: discord.Message = await self.bot.wait_for("message", check=check)
         if cancel_check(embed_res) is True:
@@ -129,13 +146,25 @@ class AnnoucementPlugin(commands.Cog):
                 await ctx.send("Cancelled")
                 return
             else:
-                await schan.send(embed=embed)
+                await schan.send(f"{role_mention}", embed=embed)
+            if role:
+                guild: discord.Guild = ctx.guild
+                grole: discord.Role = await guild.get_role(role.id)
+                await grole.edit(mentionable=False)
 
     @commands.Cog.listener()
     async def on_ready(self):
         async with self.bot.session.post("https://counter.modmail-plugins.ionadev.ml/api/instances/announcement",
                                          json={'id': self.bot.user.id}):
             print("Posted to Plugin API")
+
+    @staticmethod
+    async def generate_embed(description: str):
+        embed = discord.Embed()
+        embed.colour = discord.Colour.blurple()
+        embed.description = description
+
+        return embed
 
 
 def setup(bot):
