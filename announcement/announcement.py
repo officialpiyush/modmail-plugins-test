@@ -124,6 +124,17 @@ class AnnoucementPlugin(commands.Cog):
                 des = await self.bot.wait_for("message", check=description_check)
                 embed.description = des.content
 
+            await ctx.send(embed=await self.generate_embed("Will the embed have a thumbnail?`[y/n]`"))
+            th_res: discord.Message = await self.bot.wait_for("message", check=check)
+            if cancel_check(th_res) is True:
+                await ctx.send("Cancelled")
+                return
+            elif cancel_check(th_res) is False and th_res.content.lower() == "y":
+                await ctx.send(embed=await self.generate_embed("What should be the thumbnail of the embed?Give a "
+                                                               "valid URL"))
+                thu = await self.bot.wait_for("message", check=check)
+                embed.set_thumbnail(url=thu.content)
+
             await ctx.send(embed=await self.generate_embed("Will the embed have a footer?`[y/n]`"))
             f_res: discord.Message = await self.bot.wait_for("message", check=check)
             if cancel_check(f_res) is True:
