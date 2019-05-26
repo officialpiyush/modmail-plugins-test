@@ -65,7 +65,7 @@ class AnnoucementPlugin(commands.Cog):
         if cancel_check(embed_res) is True:
             await ctx.send("Cancelled!")
             return
-        elif cancel_check(embed_res) is False and embed_res == "n":
+        elif cancel_check(embed_res) is False and embed_res.content.lower() == "n":
             await ctx.send("Okay, Lets do a no-embed announcement.\nWhat's The Announcement?")
             announcement = await self.bot.wait_for("message", check=check)
             if cancel_check(announcement) is True:
