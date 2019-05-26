@@ -72,7 +72,7 @@ class AnnoucementPlugin(commands.Cog):
         if role:
             guild: discord.Guild = ctx.guild
             grole: discord.Role = guild.get_role(role.id)
-            await grole.edit(mentionable=False)
+            await grole.edit(mentionable=True)
 
         await ctx.send("Starting an interactive process to make an announcement")
 
@@ -185,6 +185,25 @@ class AnnoucementPlugin(commands.Cog):
                 return
             else:
                 await schan.send(f"{role_mention}", embed=embed)
+        if role:
+            guild: discord.Guild = ctx.guild
+            grole: discord.Role = guild.get_role(role.id)
+            if grole.mentionable is True:
+                await grole.edit(mentionable=False)
+
+    @announcement.command(aliases=["native", "n", "q"])
+    @checks.has_permissions(PermissionLevel.ADMIN)
+    async def quick(self,ctx: commands.Context, channel: discord.TextChannel, role: typing.Optional[discord.Role],
+                    *, msg: str):
+        if role:
+            guild: discord.Guild = ctx.guild
+            grole: discord.Role = guild.get_role(role.id)
+            await grole.edit(mentionable=True)
+
+        role_mention = f"<@&{role.id}>" if role else ""
+
+        await channel.send(f"{role_mention}\n{msg}")
+        
         if role:
             guild: discord.Guild = ctx.guild
             grole: discord.Role = guild.get_role(role.id)
