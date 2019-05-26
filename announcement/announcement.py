@@ -34,7 +34,7 @@ class AnnoucementPlugin(commands.Cog):
         """
         if role:
             guild: discord.Guild = ctx.guild
-            grole: discord.Role = await guild.get_role(role.id)
+            grole: discord.Role = guild.get_role(role.id)
             await grole.edit(mentionable=True)
 
         role_mention = f"<@&{role.id}>" if role else ""
@@ -127,7 +127,7 @@ class AnnoucementPlugin(commands.Cog):
             elif cancel_check(f_res) is False and f_res.content.lower() == "y":
                 await ctx.send(embed=await self.generate_embed("What should be the footer of the embed?\n**Must not exceed 2048 characters**"))
                 foo = await self.bot.wait_for("message", check=footer_check)
-                embed.footer.text = foo.content
+                embed.set_footer(foo.content)
             await ctx.send(embed=await self.generate_embed("In which channel should I send the announcement?"))
             channel: discord.Message = await self.bot.wait_for("message", check=check)
             if cancel_check(channel) is True:
