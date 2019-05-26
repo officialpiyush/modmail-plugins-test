@@ -148,7 +148,7 @@ class AnnoucementPlugin(commands.Cog):
                 await schan.send(f"{role_mention}", embed=embed)
         if role:
             guild: discord.Guild = ctx.guild
-            grole: discord.Role = await guild.get_role(role.id)
+            grole: discord.Role = guild.get_role(role.id)
             if grole.mentionable is True:
                 await grole.edit(mentionable=False)
 
