@@ -32,10 +32,6 @@ class AnnoucementPlugin(commands.Cog):
         __Announcement Without Role Mention__
         [p]announcement start
         """
-        if role:
-            guild: discord.Guild = ctx.guild
-            grole: discord.Role = guild.get_role(role.id)
-            await grole.edit(mentionable=True)
 
         role_mention = f"<@&{role.id}>" if role else ""
 
@@ -127,7 +123,7 @@ class AnnoucementPlugin(commands.Cog):
             elif cancel_check(f_res) is False and f_res.content.lower() == "y":
                 await ctx.send(embed=await self.generate_embed("What should be the footer of the embed?\n**Must not exceed 2048 characters**"))
                 foo = await self.bot.wait_for("message", check=footer_check)
-                embed.set_footer(foo.content)
+                embed.set_footer(text=foo.content)
             await ctx.send(embed=await self.generate_embed("In which channel should I send the announcement?"))
             channel: discord.Message = await self.bot.wait_for("message", check=check)
             if cancel_check(channel) is True:
@@ -151,7 +147,6 @@ class AnnoucementPlugin(commands.Cog):
             grole: discord.Role = guild.get_role(role.id)
             if grole.mentionable is True:
                 await grole.edit(mentionable=False)
-
 
     @commands.Cog.listener()
     async def on_ready(self):
